@@ -4,6 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const mongoose = require("mongoose");
+const env = require("dotenv");
+env.config();
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -11,7 +15,16 @@ var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 
+const Dishes = require("./models/dishes");
 
+const dburl = process.env.DATABASE_URL;
+const connect = mongoose.connect(dburl, { useNewUrlParser: true });
+
+connect.then((db) => {
+  console.log("Connected to the server");
+}, (err) => {
+  console.log(err);
+});
 
 var app = express();
 
@@ -33,12 +46,12 @@ app.use('/leaders', leaderRouter);
 
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
